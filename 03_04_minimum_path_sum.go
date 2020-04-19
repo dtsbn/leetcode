@@ -1,29 +1,40 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func min(a, b int) int {
 	if a < b {
 		return a
-	} else {
-		return b
 	}
-}
-
-func dfs(grid [][]int, i int, j int, path int) int {
-	if i < len(grid)-1 && j < len(grid[0])-1 {
-		return grid[i][j] + min(dfs(grid, i+1, j, path), dfs(grid, i, j+1, path))
-	} else if i < len(grid)-1 {
-		return grid[i][j] + dfs(grid, i+1, j, path)
-	} else if j < len(grid[0])-1 {
-		return grid[i][j] + dfs(grid, i, j+1, path)
-	} else {
-		return grid[i][j]
-	}
+	return b
 }
 
 func minPathSum(grid [][]int) int {
-	return dfs(grid, 0, 0, 0)
+	m, n := len(grid), len(grid[0])
+	matrix := make([][]int, m)
+
+	// fill first row
+	for sum, y := 0, 0; y < m; y++ {
+		matrix[y] = make([]int, n)
+		sum += grid[y][0]
+		matrix[y][0] = sum
+	}
+
+	//fill first column
+	for sum, x := 0, 0; x < n; x++ {
+		sum += grid[0][x]
+		matrix[0][x] = sum
+	}
+
+	for y := 1; y < m; y++ {
+		for x := 1; x < n; x++ {
+			matrix[y][x] = min(matrix[y][x-1], matrix[y-1][x]) + grid[y][x]
+		}
+	}
+
+	return matrix[m-1][n-1]
 }
 
 func main() {
